@@ -9,6 +9,8 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 interface ISushiSingleSwap {
     function depositToken(uint256 _amountIn, address _tokenIn) external;
 
+    function withdraw(address _tokenAddress) external;
+
     function swapToken(
         uint256 _amountIn,
         uint256 _amountOutMin,
@@ -55,6 +57,7 @@ contract UniswapV3SingleSwap {
         TransferHelper.safeApprove(_tokenOut, address(sushiSwapSingle), amountOut);
         sushiSwapSingle.depositToken(amountOut, _tokenOut);
         sushiSwapSingle.swapToken(amountOut, amountOutMin, _tokenOut, _tokenIn);
+        sushiSwapSingle.withdraw(_tokenIn);
     }
 
     function getBalance(address _tokenAddress) public view returns (uint256) {
