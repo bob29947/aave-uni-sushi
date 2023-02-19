@@ -1,6 +1,14 @@
 const networkConfig = {
     31337: {
         name: "localhost",
+
+        sushiSwapRouter: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
+        sushiSingleSwap: "0xCB6637989Df0571e8E93aCB4d15dA7201Eea3d0f",
+
+        uniSwapRouter: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+        uniswapV3SingleSwap: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+
+        poolAddressProvider: "0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb",
     },
 
     5: {
