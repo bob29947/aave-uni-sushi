@@ -35,6 +35,10 @@ contract UniswapV3SingleSwap {
         TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
     }
 
+    function withdraw(address _tokenAddress) external {
+        IERC20(_tokenAddress).transfer(msg.sender, IERC20(_tokenAddress).balanceOf(address(this)));
+    }
+
     function swapExactInputSingle(
         uint256 _amountIn,
         address _tokenIn,

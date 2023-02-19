@@ -11,6 +11,8 @@ error AaveV3FlashLoan__NotOwner();
 interface IUniswapV3SingleSwap {
     function depositToken(uint256 _amountIn, address _tokenIn) external;
 
+    function withdraw(address _tokenAddress) external;
+
     function swapExactInputSingle(
         uint256 _amountIn,
         address _tokenIn,
@@ -22,7 +24,7 @@ interface IUniswapV3SingleSwap {
 
 contract AaveV3FlashLoan is FlashLoanSimpleReceiverBase {
     address private immutable i_owner;
-    address private immutable i_uniswapV3SingleSwapAddress;
+    IUniswapV3SingleSwap private immutable uniswapV3SingleSwap;
     address private tokenOut;
 
     event FlashLoanRequest(
@@ -41,7 +43,7 @@ contract AaveV3FlashLoan is FlashLoanSimpleReceiverBase {
         address _uniswapV3SingleSwapAddress
     ) FlashLoanSimpleReceiverBase(IPoolAddressesProvider(_addressProvider)) {
         i_owner = msg.sender;
-        i_uniswapV3SingleSwapAddress = _uniswapV3SingleSwapAddress;
+        uniswapV3SingleSwap = IUniswapV3SingleSwap(_uniswapV3SingleSwapAddress);
     }
 
     receive() external payable {}
@@ -53,13 +55,10 @@ contract AaveV3FlashLoan is FlashLoanSimpleReceiverBase {
         address /* initiator */,
         bytes calldata /* params */
     ) external override returns (bool) {
-        IERC20(_tokenIn).approve(i_uniswapV3SingleSwapAddress, _amountIn);
-        IUniswapV3SingleSwap(i_uniswapV3SingleSwapAddress).depositToken(_amountIn, _tokenIn);
-        IUniswapV3SingleSwap(i_uniswapV3SingleSwapAddress).swapExactInputSingle(
-            _amountIn,
-            _tokenIn,
-            tokenOut
-        );
+        IERC20(_tokenIn).approve(address(uniswapV3SingleSwap), _amountIn);
+        uniswapV3SingleSwap.depositToken(_amountIn, _tokenIn);
+        uniswapV3SingleSwap.swapExactInputSingle(_amountIn, _tokenIn, tokenOut);
+        uniswapV3SingleSwap.withdraw(_tokenIn);
 
         uint256 amountOwed = _amountIn + _premium;
         IERC20(_tokenIn).approve(address(POOL), amountOwed);
@@ -87,9 +86,5 @@ contract AaveV3FlashLoan is FlashLoanSimpleReceiverBase {
 
     function getOwner() public view returns (address) {
         return (i_owner);
-    }
-
-    function getUniswapV3SingleSwapAddress() public view returns (address) {
-        return (i_uniswapV3SingleSwapAddress);
     }
 }
