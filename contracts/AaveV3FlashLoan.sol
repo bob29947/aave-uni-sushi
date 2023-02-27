@@ -10,7 +10,7 @@ import {IUniswapV3SingleSwap} from "contracts/interfaces/IUniswapV3SingleSwap.so
 contract AaveV3FlashLoan is FlashLoanSimpleReceiverBase {
     address private immutable i_owner;
     IUniswapV3SingleSwap private immutable i_uniswapV3SingleSwap;
-    address private tokenOut;
+    address private s_tokenOut;
 
     event FlashLoanRequest(
         address indexed receiverAddress,
@@ -48,7 +48,7 @@ contract AaveV3FlashLoan is FlashLoanSimpleReceiverBase {
     ) external override returns (bool) {
         IERC20(tokenIn).approve(address(i_uniswapV3SingleSwap), amountIn);
         i_uniswapV3SingleSwap.depositToken(amountIn, tokenIn);
-        i_uniswapV3SingleSwap.swapExactInputSingle(amountIn, tokenIn, tokenOut);
+        i_uniswapV3SingleSwap.swapExactInputSingle(amountIn, tokenIn, s_tokenOut);
         i_uniswapV3SingleSwap.withdraw(tokenIn);
 
         uint256 amountOwed = amountIn + premium;
@@ -56,13 +56,13 @@ contract AaveV3FlashLoan is FlashLoanSimpleReceiverBase {
         return true;
     }
 
-    function requestFlashLoan(uint256 amountIn, address tokenIn, address _tokenOut) public {
+    function requestFlashLoan(uint256 amountIn, address tokenIn, address tokenOut) public {
         address receiverAddress = address(this);
         address asset = tokenIn;
         uint256 amount = amountIn;
         bytes memory params = "";
         uint16 referralCode = 0;
-        tokenOut = _tokenOut;
+        s_tokenOut = tokenOut;
         POOL.flashLoanSimple(receiverAddress, asset, amount, params, referralCode);
         emit FlashLoanRequest(receiverAddress, amount, asset);
     }

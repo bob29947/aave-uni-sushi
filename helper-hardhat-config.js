@@ -21,7 +21,7 @@ const networkConfig = {
         uniswapV3SingleSwap: "0x00C21BaD8820c1CbbE501929Ba473124ef9c0CD3",
 
         poolAddressProvider: "0xc4dCB5126a3AfEd129BC3668Ea19285A9f56D15D",
-        aaveV3FlashLoan: "0xEedD550bE34D00d83e440066651d16148E53e347",
+        aaveV3FlashLoan: "0x774559AebD3212CCE8559aBABd0b8f3720dc37fe",
 
         borrowAmount: "4000000",
         aaveUsdc: "0xA2025B15a1757311bfD68cb14eaeFCc237AF5b43",
